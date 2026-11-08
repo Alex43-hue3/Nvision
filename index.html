@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,129 +10,122 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Outfit', sans-serif; background-color: #0b0f19; color: #f3f4f6; overflow-x: hidden; }
-        .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-card { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .neon-glow { text-shadow: 0 0 20px rgba(0, 229, 255, 0.6); }
-        /* Ocultar scrollbar pero permitir desplazamiento */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0b0f19; }
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #374151; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between relative">
 
-    <!-- Fondo ambiental -->
-    <div class="absolute inset-0 z-0 opacity-30 bg-cover bg-center pointer-events-none" style="background-image: url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1920&auto=format&fit=crop');"></div>
-    <div class="absolute inset-0 z-0 bg-gradient-to-b from-[#0b0f19]/80 via-[#0b0f19]/90 to-[#0b0f19] pointer-events-none"></div>
+    <!-- SECCIÓN DE PERFILES (Si no hay perfil activo) -->
+    <div id="profile-selection-screen" class="fixed inset-0 z-50 bg-[#0b0f19] flex flex-col items-center justify-center p-4">
+        <div class="max-w-2xl w-full text-center space-y-8">
+            <div>
+                <span class="text-3xl font-black tracking-wider text-white">NET<span class="text-[#00e5ff] neon-glow">VISION</span></span>
+                <h1 class="text-2xl font-bold text-white mt-4">¿Quién está viendo ahora?</h1>
+            </div>
+            <div id="profiles-grid" class="flex flex-wrap justify-center gap-6">
+                <!-- Perfiles dinámicos -->
+            </div>
+            <div class="flex justify-center space-x-4 pt-4">
+                <button onclick="openCreateProfileModal()" class="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition border border-white/10 flex items-center space-x-2">
+                    <i class="fa-solid fa-user-plus text-[#00e5ff]"></i>
+                    <span>Crear Perfil</span>
+                </button>
+                <button onclick="openDonationModal()" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 text-white text-sm font-semibold transition flex items-center space-x-2 shadow-lg">
+                    <i class="fa-solid fa-heart"></i>
+                    <span>Apoyar / Donar</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Header -->
-    <header class="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0b0f19]/50 backdrop-blur-md">
-        <div class="flex items-center space-x-3">
-            <span class="text-2xl font-black tracking-wider text-white">NET<span class="text-[#00e5ff] neon-glow">VISION</span></span>
-            <span class="text-xs text-gray-400 border-l border-gray-700 pl-3 hidden sm:inline">Hola, WED</span>
+    <!-- HEADER DE LA APP -->
+    <header id="main-header" class="hidden relative z-40 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0b0f19]/80 backdrop-blur-md sticky top-0">
+        <div class="flex items-center space-x-6">
+            <span class="text-2xl font-black tracking-wider text-white cursor-pointer" onclick="changeView('home')">NET<span class="text-[#00e5ff] neon-glow">VISION</span></span>
+            <nav class="hidden md:flex items-center space-x-4 text-sm font-medium text-gray-300">
+                <button onclick="changeView('home')" class="hover:text-[#00e5ff] transition">Inicio</button>
+                <button onclick="selectCategory('movies')" class="hover:text-[#00e5ff] transition">Películas</button>
+                <button onclick="selectCategory('series')" class="hover:text-[#00e5ff] transition">Series</button>
+                <button onclick="selectCategory('live')" class="hover:text-[#00e5ff] transition">TV en Vivo</button>
+                <button onclick="openWatchlist()" class="hover:text-[#00e5ff] transition">Mi Lista</button>
+            </nav>
         </div>
         <div class="flex items-center space-x-4">
-            <button onclick="changeView('home')" class="flex items-center space-x-2 text-sm text-gray-300 hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-white/5">
-                <i class="fa-solid fa-house"></i>
-                <span class="hidden md:inline">Menú principal</span>
-            </button>
             <button onclick="openSearchModal()" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 transition">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
-            <div class="flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs">W</div>
-                <span class="text-sm font-medium text-gray-200">WED</span>
+            <div onclick="switchProfilePrompt()" class="flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 cursor-pointer hover:bg-white/10 transition">
+                <div id="current-profile-avatar" class="w-7 h-7 rounded-full bg-cyan-500 flex items-center justify-center text-black font-bold text-xs">W</div>
+                <span id="current-profile-name" class="text-sm font-medium text-gray-200">WED</span>
             </div>
         </div>
     </header>
 
-    <!-- Contenido Principal -->
-    <main class="relative z-10 flex-grow flex flex-col items-center justify-center px-4 py-10 max-w-7xl mx-auto w-full">
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="relative z-10 flex-grow max-w-7xl mx-auto w-full p-4 md:p-6 space-y-10">
         
-        <!-- VISTA: Menú Principal (Inspirado en tu captura) -->
-        <div id="view-home" class="w-full text-center space-y-10 animate-fade-in">
-            <div class="space-y-2">
-                <span class="text-xs font-bold uppercase tracking-widest text-[#00e5ff]">Menú Principal</span>
-                <h1 class="text-4xl md:text-5xl font-extrabold text-white">¿Qué quieres ver?</h1>
-                <p class="text-gray-400 text-sm md:text-base">TV en vivo, películas y series en una sola experiencia.</p>
+        <!-- VISTA: HOME (Estilo Netflix con filas) -->
+        <div id="view-home" class="space-y-8 hidden">
+            <!-- Banner Principal Destacado -->
+            <div id="featured-banner" class="relative rounded-2xl overflow-hidden aspect-[21/9] bg-gray-900 border border-white/10 flex items-end p-6 md:p-10">
+                <!-- Se inyecta dinámicamente -->
             </div>
 
-            <!-- Tarjetas de Navegación -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto w-full">
-                <!-- TV en vivo -->
-                <div onclick="selectCategory('live')" class="glass-card p-6 rounded-2xl cursor-pointer hover:border-[#00e5ff]/50 transition group text-left relative overflow-hidden">
-                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/25 transition"></div>
-                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-[#00e5ff] flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-tv"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-1">TV EN VIVO</h3>
-                    <p class="text-xs text-gray-400 mb-6">Canales en directo</p>
-                    <div class="flex items-center text-xs font-semibold text-[#00e5ff] group-hover:translate-x-1 transition">
-                        Explorar <i class="fa-solid fa-arrow-right ml-2"></i>
-                    </div>
+            <!-- Filas de contenido -->
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2"><i class="fa-solid fa-fire text-orange-500"></i> <span>Estrenos y Más Vistas</span></h3>
+                    <div id="row-trending" class="flex space-x-4 overflow-x-auto hide-scroll pb-2"></div>
                 </div>
-
-                <!-- Películas -->
-                <div onclick="selectCategory('movies')" class="glass-card p-6 rounded-2xl cursor-pointer hover:border-purple-500/50 transition group text-left relative overflow-hidden ring-1 ring-purple-500/30">
-                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/25 transition"></div>
-                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-film"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-1">PELÍCULAS</h3>
-                    <p class="text-xs text-gray-400 mb-6">Explora nuestro catálogo</p>
-                    <div class="flex items-center text-xs font-semibold text-purple-400 group-hover:translate-x-1 transition">
-                        Explorar <i class="fa-solid fa-arrow-right ml-2"></i>
-                    </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2"><i class="fa-solid fa-film text-purple-400"></i> <span>Películas Recomendadas</span></h3>
+                    <div id="row-movies" class="flex space-x-4 overflow-x-auto hide-scroll pb-2"></div>
                 </div>
-
-                <!-- Series -->
-                <div onclick="selectCategory('series')" class="glass-card p-6 rounded-2xl cursor-pointer hover:border-cyan-500/50 transition group text-left relative overflow-hidden">
-                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl group-hover:bg-cyan-500/25 transition"></div>
-                    <div class="w-12 h-12 rounded-xl bg-cyan-500/20 text-[#00e5ff] flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-clapperboard"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-1">SERIES</h3>
-                    <p class="text-xs text-gray-400 mb-6">Tus series favoritas</p>
-                    <div class="flex items-center text-xs font-semibold text-[#00e5ff] group-hover:translate-x-1 transition">
-                        Explorar <i class="fa-solid fa-arrow-right ml-2"></i>
-                    </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2"><i class="fa-solid fa-clapperboard text-cyan-400"></i> <span>Series Populares</span></h3>
+                    <div id="row-series" class="flex space-x-4 overflow-x-auto hide-scroll pb-2"></div>
                 </div>
-            </div>
-
-            <!-- Botón Mi Lista -->
-            <div>
-                <button onclick="openWatchlist()" class="inline-flex items-center space-x-2 px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition border border-white/10">
-                    <i class="fa-solid fa-bookmark text-[#00e5ff]"></i>
-                    <span>Mi lista</span>
-                </button>
             </div>
         </div>
 
-        <!-- VISTA: Catálogo / Contenido -->
-        <div id="view-catalog" class="w-full hidden space-y-6">
+        <!-- VISTA: CATÁLOGO GENERAL O BÚSQUEDA -->
+        <div id="view-catalog" class="hidden space-y-6">
             <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                <div class="flex items-center space-x-3">
-                    <button onclick="changeView('home')" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </button>
-                    <h2 id="catalog-title" class="text-2xl font-bold text-white uppercase">Catálogo</h2>
-                </div>
-                <!-- Filtros de Género -->
-                <div id="genre-filters" class="flex items-center space-x-2 overflow-x-auto py-1">
-                    <button onclick="filterGenre('all')" class="px-3 py-1 rounded-full bg-[#00e5ff] text-black font-semibold text-xs whitespace-nowrap">Todos</button>
-                </div>
+                <h2 id="catalog-title" class="text-2xl font-bold text-white uppercase">Catálogo</h2>
+                <div id="catalog-filters" class="flex space-x-2"></div>
             </div>
+            <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+        </div>
 
-            <!-- Cuadrícula de Contenido -->
-            <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                <!-- Se inyecta dinámicamente -->
-            </div>
+        <!-- VISTA: TV EN VIVO POR CATEGORÍAS -->
+        <div id="view-live" class="hidden space-y-8">
+            <h2 class="text-2xl font-bold text-white uppercase border-b border-white/10 pb-4">TV en Vivo</h2>
+            <div id="live-categories-container" class="space-y-8"></div>
         </div>
 
     </main>
 
-    <!-- Reproductor / Modal de Contenido -->
-    <div id="player-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex flex-col">
+    <!-- MODAL DE DETALLE DE CONTENIDO (Sinopsis, Relacionados, Ver, Agregar a lista) -->
+    <div id="detail-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-3xl w-full rounded-2xl overflow-hidden relative max-h-[90vh] flex flex-col">
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="detail-content" class="overflow-y-auto p-6 md:p-8 space-y-6">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE REPRODUCTOR (Video, Auto-siguiente serie, sugerencias al finalizar) -->
+    <div id="player-modal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl hidden flex flex-col">
         <div class="flex items-center justify-between p-4 bg-black/60 border-b border-white/10">
             <h3 id="player-title" class="text-lg font-bold text-white truncate max-w-xl">Reproduciendo</h3>
             <button onclick="closePlayer()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">
@@ -139,217 +133,447 @@
             </button>
         </div>
         <div class="flex-grow flex flex-col md:flex-row overflow-hidden">
-            <!-- Contenedor del video / iframe / reproductor -->
             <div class="flex-grow flex items-center justify-center bg-black relative p-4">
-                <div id="video-container" class="w-full h-full max-h-[80vh] flex items-center justify-center">
-                    <!-- Iframe o video nativo -->
-                </div>
+                <div id="video-container" class="w-full h-full max-h-[85vh] flex items-center justify-center"></div>
             </div>
-            <!-- Panel lateral para Series (Temporadas y Episodios) -->
+            <!-- Panel de episodios para Series con reproducción automática -->
             <div id="series-episodes-panel" class="w-full md:w-80 bg-gray-900/90 border-l border-white/10 p-4 overflow-y-auto hidden flex flex-col space-y-4">
-                <div class="flex space-x-2 border-b border-white/10 pb-3" id="seasons-tabs">
-                    <!-- Pestañas de temporadas -->
-                </div>
-                <div id="episodes-list" class="space-y-2 flex-grow overflow-y-auto">
-                    <!-- Lista de episodios -->
-                </div>
+                <div class="flex space-x-2 border-b border-white/10 pb-3 overflow-x-auto" id="seasons-tabs"></div>
+                <div id="episodes-list" class="space-y-2 flex-grow overflow-y-auto"></div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- MODAL CREAR PERFIL -->
+    <div id="profile-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex items-center justify-center p-4">
+        <div class="glass-card p-6 rounded-2xl max-w-sm w-full space-y-4">
+            <h3 class="text-lg font-bold text-white">Crear Nuevo Perfil</h3>
+            <input type="text" id="new-profile-name" placeholder="Nombre del perfil" class="w-full px-3 py-2 rounded-lg bg-black/50 border border-white/10 text-white text-sm focus:outline-none focus:border-[#00e5ff]">
+            <div class="flex space-x-2">
+                <button onclick="saveNewProfile()" class="flex-1 py-2 rounded-lg bg-[#00e5ff] text-black font-bold text-sm">Guardar</button>
+                <button onclick="closeCreateProfileModal()" class="flex-1 py-2 rounded-lg bg-white/10 text-white text-sm">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE DONACIÓN / APOYO -->
+    <div id="donation-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex items-center justify-center p-4">
+        <div class="glass-card p-8 rounded-2xl max-w-md w-full text-center space-y-6">
+            <div class="w-16 h-16 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-solid fa-heart"></i>
+            </div>
+            <div>
+                <h3 class="text-2xl font-bold text-white mb-2">Apoya el Proyecto</h3>
+                <p class="text-xs text-gray-400">Si te gusta NETVISION, puedes donar para mantener servidores y mejorar la plataforma.</p>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="donateAmount('$5 USD')" class="py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-sm transition">$5 USD</button>
+                <button onclick="donateAmount('$10 USD')" class="py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-sm transition">$10 USD</button>
+                <button onclick="donateAmount('$25 USD')" class="py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-sm transition">$25 USD</button>
+            </div>
+            <button onclick="closeDonationModal()" class="w-full py-3 rounded-xl bg-white/10 text-white font-bold text-sm hover:bg-white/20 transition">Cerrar</button>
+        </div>
+    </div>
+
     <footer class="relative z-10 py-6 text-center text-xs text-gray-500 border-t border-white/5">
         <p>NETVISION Pro &copy; 2026. Todos los derechos reservados.</p>
     </footer>
 
     <script>
-        // Datos sincronizados desde localStorage
+        // Datos y Estado
+        let activeProfile = localStorage.getItem('netvision_active_profile');
+        let currentItemBeingPlayed = null;
+        let currentSeasonIndex = 0;
+        let currentEpisodeIndex = 0;
+
         function getData(key) {
             try { return JSON.parse(localStorage.getItem('netvision_' + key)) || []; } catch(e) { return []; }
         }
 
-        function getWatchlist() {
-            try { return JSON.parse(localStorage.getItem('netvision_watchlist')) || []; } catch(e) { return []; }
+        function getProfiles() {
+            try { return JSON.parse(localStorage.getItem('netvision_profiles')) || [{name: 'WED', color: 'bg-cyan-500'}]; } catch(e) { return [{name: 'WED', color: 'bg-cyan-500'}]; }
         }
 
+        // Inicialización de Perfiles
+        window.addEventListener('DOMContentLoaded', () => {
+            renderProfilesSelection();
+            if (activeProfile) {
+                document.getElementById('profile-selection-screen').classList.add('hidden');
+                document.getElementById('main-header').classList.remove('hidden');
+                changeView('home');
+            }
+        });
+
+        function renderProfilesSelection() {
+            const grid = document.getElementById('profiles-grid');
+            const profiles = getProfiles();
+            grid.innerHTML = '';
+            profiles.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'flex flex-col items-center space-y-2 cursor-pointer group';
+                div.onclick = () => selectProfile(p.name);
+                div.innerHTML = `
+                    <div class="w-20 h-20 rounded-2xl ${p.color || 'bg-blue-600'} flex items-center justify-center text-2xl font-bold text-white group-hover:scale-105 transition shadow-lg">${p.name.charAt(0).toUpperCase()}</div>
+                    <span class="text-sm font-medium text-gray-300 group-hover:text-white">${p.name}</span>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function selectProfile(name) {
+            localStorage.setItem('netvision_active_profile', name);
+            activeProfile = name;
+            document.getElementById('profile-selection-screen').classList.add('hidden');
+            document.getElementById('main-header').classList.remove('hidden');
+            document.getElementById('current-profile-name').innerText = name;
+            document.getElementById('current-profile-avatar').innerText = name.charAt(0).toUpperCase();
+            changeView('home');
+        }
+
+        function switchProfilePrompt() {
+            localStorage.removeItem('netvision_active_profile');
+            document.getElementById('profile-selection-screen').classList.remove('hidden');
+            document.getElementById('main-header').classList.add('hidden');
+            renderProfilesSelection();
+        }
+
+        function openCreateProfileModal() { document.getElementById('profile-modal').classList.remove('hidden'); }
+        function closeCreateProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); }
+        function saveNewProfile() {
+            const name = document.getElementById('new-profile-name').value;
+            if(!name) return;
+            let profiles = getProfiles();
+            profiles.push({name, color: 'bg-gradient-to-tr from-purple-500 to-pink-500'});
+            localStorage.setItem('netvision_profiles', JSON.stringify(profiles));
+            closeCreateProfileModal();
+            renderProfilesSelection();
+        }
+
+        function openDonationModal() { document.getElementById('donation-modal').classList.remove('hidden'); }
+        function closeDonationModal() { document.getElementById('donation-modal').classList.add('hidden'); }
+        function donateAmount(amt) { alert('¡Muchas gracias por tu apoyo de ' + amt + '! Tu donación nos ayuda a seguir creciendo.'); closeDonationModal(); }
+
+        // Navegación de Vistas
+        function changeView(view) {
+            ['view-home', 'view-catalog', 'view-live'].forEach(v => document.getElementById(v).classList.add('hidden'));
+            if (view === 'home') {
+                document.getElementById('view-home').classList.remove('hidden');
+                renderHome();
+            } else if (view === 'catalog') {
+                document.getElementById('view-catalog').classList.remove('hidden');
+            } else if (view === 'live') {
+                document.getElementById('view-live').classList.remove('hidden');
+                renderLiveTV();
+            }
+        }
+
+        function renderHome() {
+            const movies = getData('movies');
+            const series = getData('series');
+            
+            // Banner principal con la primera película o serie
+            const banner = document.getElementById('featured-banner');
+            const featured = movies[0] || series[0];
+            if (featured) {
+                banner.style.backgroundImage = `url('${featured.poster || ''}')`;
+                banner.style.backgroundSize = 'cover';
+                banner.style.backgroundPosition = 'center';
+                banner.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f19] via-black/40 to-transparent"></div>
+                    <div class="relative z-10 max-w-xl space-y-3">
+                        <span class="px-2.5 py-1 rounded bg-[#00e5ff]/20 text-[#00e5ff] text-xs font-bold uppercase">${featured.genre || 'Estreno'}</span>
+                        <h2 class="text-3xl md:text-4xl font-extrabold text-white">${featured.title}</h2>
+                        <p class="text-xs md:text-sm text-gray-300 line-clamp-2">${featured.synopsis || 'Disfruta de este gran título disponible exclusivamente en NETVISION.'}</p>
+                        ${featured.expiryDate ? `<p class="text-xs text-red-400 font-semibold"><i class="fa-solid fa-clock mr-1"></i> Último día disponible: ${featured.expiryDate}</p>` : ''}
+                        <div class="flex space-x-3 pt-2">
+                            <button onclick='openDetail(${JSON.stringify(featured).replace(/'/g, "&#39;")}, "movie")' class="px-6 py-2.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-gray-200 transition flex items-center space-x-2">
+                                <i class="fa-solid fa-play"></i><span>Ver ahora</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderRow('row-trending', [...movies, ...series]);
+            renderRow('row-movies', movies);
+            renderRow('row-series', series);
+        }
+
+        function renderRow(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            if (items.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500">No hay contenido en esta sección.</p>`;
+                return;
+            }
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'flex-shrink-0 w-36 sm:w-44 glass-card rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition duration-300 group';
+                card.onclick = () => openDetail(item, item.seasons ? 'series' : 'movie');
+                card.innerHTML = `
+                    <div class="aspect-[2/3] bg-gray-800 relative overflow-hidden">
+                        <img src="${item.poster || ''}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        ${item.expiryDate ? `<span class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-red-600/80 text-white text-[9px] font-bold">Último día</span>` : ''}
+                    </div>
+                    <div class="p-2">
+                        <h4 class="font-bold text-xs text-white truncate">${item.title}</h4>
+                        <span class="text-[10px] text-gray-400">${item.genre || 'General'}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Ficha de Detalle (Sinopsis, Relacionados, Botones)
+        function openDetail(item, type) {
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('detail-content');
+            modal.classList.remove('hidden');
+
+            const movies = getData('movies');
+            const series = getData('series');
+            const related = [...movies, ...series].filter(i => i.genre === item.genre && i.id !== item.id).slice(0, 4);
+            const watchlist = JSON.parse(localStorage.getItem('netvision_watchlist') || '[]');
+            const isInList = watchlist.includes(item.id);
+
+            content.innerHTML = `
+                <div class="flex flex-col md:flex-row gap-6">
+                    <img src="${item.poster || ''}" class="w-full md:w-48 aspect-[2/3] object-cover rounded-xl shadow-lg">
+                    <div class="space-y-4 flex-grow">
+                        <div>
+                            <span class="text-xs font-bold text-[#00e5ff] uppercase">${item.genre || 'General'}</span>
+                            <h2 class="text-3xl font-extrabold text-white">${item.title}</h2>
+                        </div>
+                        <p class="text-sm text-gray-300 leading-relaxed">${item.synopsis || 'Sin descripción disponible para este título. Agrega una sinopsis desde el panel de administración.'}</p>
+                        ${item.expiryDate ? `<p class="text-xs text-red-400 font-semibold"><i class="fa-solid fa-clock mr-1"></i> Disponible hasta el: ${item.expiryDate}</p>` : ''}
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <button onclick='playItem(${JSON.stringify(item).replace(/'/g, "&#39;")}, "${type}")' class="px-6 py-2.5 rounded-xl bg-[#00e5ff] text-black font-bold text-sm hover:bg-[#00c2db] transition flex items-center space-x-2">
+                                <i class="fa-solid fa-play"></i><span>Ver</span>
+                            </button>
+                            <button onclick="toggleWatchlist('${item.id}')" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition flex items-center space-x-2">
+                                <i class="fa-solid ${isInList ? 'fa-check text-green-400' : 'fa-plus'}"></i><span>${isInList ? 'En mi lista' : 'Agregar a mi lista'}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Títulos Relacionados -->
+                <div class="border-t border-white/10 pt-4 space-y-3">
+                    <h4 class="text-sm font-bold text-white">Títulos Relacionados / Similares</h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="related-grid">
+                        ${related.length === 0 ? '<p class="text-xs text-gray-500">No hay títulos relacionados.</p>' : ''}
+                    </div>
+                </div>
+            `;
+
+            const relatedGrid = document.getElementById('related-grid');
+            related.forEach(rel => {
+                const div = document.createElement('div');
+                div.className = 'glass-card rounded-lg overflow-hidden cursor-pointer group';
+                div.onclick = () => openDetail(rel, rel.seasons ? 'series' : 'movie');
+                div.innerHTML = `
+                    <div class="aspect-[2/3] overflow-hidden"><img src="${rel.poster}" class="w-full h-full object-cover group-hover:scale-110 transition"></div>
+                    <div class="p-2"><h5 class="text-xs font-bold text-white truncate">${rel.title}</h5></div>
+                `;
+                relatedGrid.appendChild(div);
+            });
+        }
+
+        function closeDetailModal() { document.getElementById('detail-modal').classList.add('hidden'); }
+
         function toggleWatchlist(id) {
-            let list = getWatchlist();
+            let list = JSON.parse(localStorage.getItem('netvision_watchlist') || '[]');
             if (list.includes(id)) {
-                list = list.filter(item => item !== id);
+                list = list.filter(i => i !== id);
             } else {
                 list.push(id);
             }
             localStorage.setItem('netvision_watchlist', JSON.stringify(list));
             alert('Lista actualizada');
-        }
-
-        let currentCategory = '';
-        let currentItems = [];
-
-        function changeView(view) {
-            document.getElementById('view-home').classList.add('hidden');
-            document.getElementById('view-catalog').classList.add('hidden');
-            
-            if (view === 'home') {
-                document.getElementById('view-home').classList.remove('hidden');
-            } else if (view === 'catalog') {
-                document.getElementById('view-catalog').classList.remove('hidden');
-            }
-        }
-
-        function selectCategory(category) {
-            currentCategory = category;
-            changeView('catalog');
-            const titleEl = document.getElementById('catalog-title');
-            
-            if (category === 'live') {
-                titleEl.innerText = 'TV en Vivo';
-                currentItems = getData('channels');
-            } else if (category === 'movies') {
-                titleEl.innerText = 'Películas';
-                currentItems = getData('movies');
-            } else if (category === 'series') {
-                titleEl.innerText = 'Series';
-                currentItems = getData('series');
-            }
-            renderCatalog(currentItems);
+            closeDetailModal();
         }
 
         function openWatchlist() {
-            currentCategory = 'watchlist';
-            changeView('catalog');
-            document.getElementById('catalog-title').innerText = 'Mi Lista';
-            
-            const watchIds = getWatchlist();
+            const watchIds = JSON.parse(localStorage.getItem('netvision_watchlist') || '[]');
             const movies = getData('movies');
             const series = getData('series');
-            currentItems = [...movies, ...series].filter(item => watchIds.includes(item.id));
-            renderCatalog(currentItems);
+            const items = [...movies, ...series].filter(i => watchIds.includes(i.id));
+            
+            changeView('catalog');
+            document.getElementById('catalog-title').innerText = 'Mi Lista';
+            renderCatalogGrid(items);
         }
 
-        function renderCatalog(items) {
+        function selectCategory(cat) {
+            changeView('catalog');
+            const titleEl = document.getElementById('catalog-title');
+            let items = [];
+            if (cat === 'movies') {
+                titleEl.innerText = 'Películas';
+                items = getData('movies');
+            } else if (cat === 'series') {
+                titleEl.innerText = 'Series';
+                items = getData('series');
+            }
+            renderCatalogGrid(items);
+        }
+
+        function renderCatalogGrid(items) {
             const grid = document.getElementById('catalog-grid');
             grid.innerHTML = '';
-
-            if (items.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500">No hay contenido disponible en esta sección. Añade contenido desde el panel de administración.</div>`;
+            if(items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">No hay contenido en esta sección.</div>`;
                 return;
             }
-
             items.forEach(item => {
                 const card = document.createElement('div');
-                card.className = 'glass-card rounded-xl overflow-hidden group cursor-pointer hover:scale-105 transition duration-300 flex flex-col';
-                card.onclick = () => playItem(item);
-
+                card.className = 'glass-card rounded-xl overflow-hidden cursor-pointer group hover:scale-105 transition';
+                card.onclick = () => openDetail(item, item.seasons ? 'series' : 'movie');
                 card.innerHTML = `
-                    <div class="relative aspect-[2/3] bg-gray-800 overflow-hidden">
-                        <img src="${item.poster || 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=500'}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-3">
-                            <span class="w-10 h-10 rounded-full bg-[#00e5ff] text-black flex items-center justify-center font-bold text-lg shadow-lg">
-                                <i class="fa-solid fa-play ml-0.5"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="p-3 flex flex-col flex-grow justify-between">
-                        <h4 class="font-bold text-sm text-white truncate">${item.title}</h4>
-                        <span class="text-xs text-gray-400 mt-1">${item.genre || 'General'}</span>
-                    </div>
+                    <div class="aspect-[2/3] bg-gray-800"><img src="${item.poster}" class="w-full h-full object-cover group-hover:scale-110 transition"></div>
+                    <div class="p-3"><h4 class="font-bold text-sm text-white truncate">${item.title}</h4><span class="text-xs text-gray-400">${item.genre}</span></div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        function playItem(item) {
+        // TV en Vivo por Categorías
+        function renderLiveTV() {
+            const container = document.getElementById('live-categories-container');
+            const channels = getData('channels');
+            container.innerHTML = '';
+
+            if (channels.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 text-center py-12">No hay canales de TV en vivo registrados.</p>`;
+                return;
+            }
+
+            // Agrupar por género/categoría
+            const categories = {};
+            channels.forEach(ch => {
+                const cat = ch.genre || 'General';
+                if (!categories[cat]) categories[cat] = [];
+                categories[cat].push(ch);
+            });
+
+            for (const [catName, chList] of Object.entries(categories)) {
+                const section = document.createElement('div');
+                section.className = 'space-y-4';
+                section.innerHTML = `
+                    <h3 class="text-xl font-bold text-white border-l-4 border-[#00e5ff] pl-3">${catName}</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        ${chList.map(ch => `
+                            <div onclick='playItem(${JSON.stringify(ch).replace(/'/g, "&#39;")}, "live")' class="glass-card p-4 rounded-xl cursor-pointer hover:border-[#00e5ff] transition group text-center space-y-2">
+                                <div class="w-12 h-12 rounded-full bg-blue-500/20 text-[#00e5ff] flex items-center justify-center text-xl mx-auto group-hover:scale-110 transition"><i class="fa-solid fa-tv"></i></div>
+                                <h4 class="font-bold text-sm text-white truncate">${ch.title}</h4>
+                                <span class="text-[10px] text-gray-400">En Directo</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(section);
+            }
+        }
+
+        // Reproductor Inteligente
+        function playItem(item, type) {
+            closeDetailModal();
+            currentItemBeingPlayed = item;
             const modal = document.getElementById('player-modal');
             const titleEl = document.getElementById('player-title');
-            const container = document.getElementById('video-container');
             const seriesPanel = document.getElementById('series-episodes-panel');
 
             titleEl.innerText = item.title;
             modal.classList.remove('hidden');
             seriesPanel.classList.add('hidden');
-            container.innerHTML = '';
 
-            if (currentCategory === 'series' && item.seasons) {
+            if (type === 'series' && item.seasons) {
                 seriesPanel.classList.remove('hidden');
+                currentSeasonIndex = 0;
+                currentEpisodeIndex = 0;
                 renderSeasons(item.seasons);
-                if (item.seasons.length > 0 && item.seasons[0].episodes.length > 0) {
-                    playVideoUrl(item.seasons[0].episodes[0].url);
-                }
+                playVideoUrl(item.seasons[0].episodes[0].url);
             } else {
-                playVideoUrl(item.url);
+                playVideoUrl(item.url, true);
             }
         }
 
-        function playVideoUrl(url) {
+        function playVideoUrl(url, isMovie = false) {
             const container = document.getElementById('video-container');
-            if (!url) {
-                container.innerHTML = `<div class="text-red-400 text-sm">Enlace de reproducción no disponible.</div>`;
+            if(!url) {
+                container.innerHTML = `<p class="text-red-400">Enlace no disponible.</p>`;
                 return;
             }
 
             if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                let videoId = '';
-                if (url.includes('embed/')) {
-                    videoId = url.split('embed/')[1].split('?')[0];
-                } else if (url.includes('watch?v=')) {
-                    videoId = url.split('watch?v=')[1].split('&')[0];
-                } else {
-                    videoId = url.split('/').pop();
-                }
-                container.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" class="w-full h-full rounded-lg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-            } else if (url.endsWith('.m3u8') || url.includes('m3u8')) {
-                container.innerHTML = `<div class="text-center"><p class="text-yellow-400 mb-2 text-sm">Formato HLS (M3U8)</p><video controls autoplay class="w-full max-h-[70vh] rounded-lg"><source src="${url}" type="application/x-mpegURL">Tu navegador no soporta este formato de video.</video></div>`;
+                let videoId = url.includes('embed/') ? url.split('embed/')[1].split('?')[0] : url.split('watch?v=')[1].split('&')[0];
+                container.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" class="w-full h-full rounded-lg" frameborder="0" allowfullscreen></iframe>`;
             } else {
-                container.innerHTML = `<video src="${url}" controls autoplay class="w-full max-h-[70vh] rounded-lg"></video>`;
+                container.innerHTML = `<video id="active-video-player" src="${url}" controls autoplay class="w-full max-h-[80vh] rounded-lg"></video>`;
+                
+                // Si es película, al terminar mostrar recomendados
+                if (isMovie) {
+                    const vidElement = document.getElementById('active-video-player');
+                    vidElement.onended = () => {
+                        container.innerHTML = `
+                            <div class="text-center space-y-4">
+                                <h3 class="text-2xl font-bold text-white">¡Película Finalizada!</h3>
+                                <p class="text-sm text-gray-400">¿Qué deseas hacer ahora?</p>
+                                <button onclick="closePlayer()" class="px-6 py-2.5 bg-[#00e5ff] text-black font-bold rounded-xl">Regresar al Catálogo</button>
+                            </div>
+                        `;
+                    };
+                }
             }
         }
 
         function renderSeasons(seasons) {
-            const tabsContainer = document.getElementById('seasons-tabs');
-            const episodesContainer = document.getElementById('episodes-list');
-            tabsContainer.innerHTML = '';
-            episodesContainer.innerHTML = '';
-
-            seasons.forEach((season, sIndex) => {
+            const tabs = document.getElementById('seasons-tabs');
+            tabs.innerHTML = '';
+            seasons.forEach((season, sIdx) => {
                 const btn = document.createElement('button');
-                btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold transition ${sIndex === 0 ? 'bg-[#00e5ff] text-black' : 'bg-white/10 text-white hover:bg-white/20'}`;
-                btn.innerText = `Temp ${season.seasonNumber || sIndex + 1}`;
-                btn.onclick = () => {
-                    document.querySelectorAll('#seasons-tabs button').forEach(b => b.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white/10 text-white hover:bg-white/20');
-                    btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-[#00e5ff] text-black';
-                    renderEpisodes(season.episodes);
-                };
-                tabsContainer.appendChild(btn);
+                btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap ${sIdx === currentSeasonIndex ? 'bg-[#00e5ff] text-black' : 'bg-white/10 text-white'}`;
+                btn.innerText = `Temp ${season.seasonNumber || sIdx + 1}`;
+                btn.onclick = () => { currentSeasonIndex = sIdx; renderEpisodes(seasons); };
+                tabs.appendChild(btn);
             });
-
-            if (seasons.length > 0) {
-                renderEpisodes(seasons[0].episodes);
-            }
+            renderEpisodes(seasons);
         }
 
-        function renderEpisodes(episodes) {
+        function renderEpisodes(seasons) {
             const container = document.getElementById('episodes-list');
             container.innerHTML = '';
-
-            if (!episodes || episodes.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500">No hay episodios en esta temporada.</p>`;
-                return;
-            }
-
-            episodes.forEach((ep, idx) => {
-                const card = document.createElement('div');
-                card.className = 'p-2.5 rounded-lg bg-black/40 hover:bg-black/60 cursor-pointer flex items-center space-x-3 transition border border-white/5';
-                card.onclick = () => playVideoUrl(ep.url);
-                card.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-[#00e5ff]/20 text-[#00e5ff] flex items-center justify-center font-bold text-xs">${idx + 1}</div>
-                    <div class="overflow-hidden">
-                        <h5 class="text-xs font-bold text-white truncate">${ep.title || 'Episodio ' + (idx + 1)}</h5>
-                        <p class="text-[10px] text-gray-400">Reproducir ahora</p>
-                    </div>
+            const episodes = seasons[currentSeasonIndex].episodes;
+            episodes.forEach((ep, eIdx) => {
+                const div = document.createElement('div');
+                div.className = `p-2.5 rounded-lg cursor-pointer flex items-center space-x-3 transition ${eIdx === currentEpisodeIndex && currentSeasonIndex === currentSeasonIndex ? 'bg-[#00e5ff]/20 border border-[#00e5ff]/50' : 'bg-black/40 hover:bg-black/60'}`;
+                div.onclick = () => {
+                    currentEpisodeIndex = eIdx;
+                    playVideoUrl(ep.url);
+                    renderEpisodes(seasons);
+                };
+                div.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-[#00e5ff]/20 text-[#00e5ff] flex items-center justify-center font-bold text-xs">${eIdx + 1}</div>
+                    <div class="overflow-hidden"><h5 class="text-xs font-bold text-white truncate">${ep.title}</h5></div>
                 `;
-                container.appendChild(card);
+                container.appendChild(div);
             });
+
+            // Configurar auto-reproducción del siguiente episodio
+            const vidElement = document.getElementById('active-video-player');
+            if (vidElement) {
+                vidElement.onended = () => {
+                    if (eIdx + 1 < episodes.length) {
+                        currentEpisodeIndex++;
+                        playVideoUrl(episodes[currentEpisodeIndex].url);
+                        renderEpisodes(seasons);
+                    } else if (currentSeasonIndex + 1 < seasons.length) {
+                        currentSeasonIndex++;
+                        currentEpisodeIndex = 0;
+                        renderSeasons(seasons);
+                        playVideoUrl(seasons[currentSeasonIndex].episodes[0].url);
+                    }
+                };
+            }
         }
 
         function closePlayer() {
@@ -358,27 +582,16 @@
         }
 
         function openSearchModal() {
-            const query = prompt('¿Qué película, serie o canal buscas?');
-            if (!query) return;
+            const q = prompt('¿Qué deseas buscar?');
+            if(!q) return;
             const movies = getData('movies');
             const series = getData('series');
             const channels = getData('channels');
-            const results = [...movies, ...series, ...channels].filter(item => item.title.toLowerCase().includes(query.toLowerCase()));
-            
-            if (results.length > 0) {
-                currentCategory = 'search';
-                changeView('catalog');
-                document.getElementById('catalog-title').innerText = `Resultados para: "${query}"`;
-                renderCatalog(results);
-            } else {
-                alert('No se encontraron resultados.');
-            }
+            const res = [...movies, ...series, ...channels].filter(i => i.title.toLowerCase().includes(q.toLowerCase()));
+            changeView('catalog');
+            document.getElementById('catalog-title').innerText = `Resultados para: "${q}"`;
+            renderCatalogGrid(res);
         }
-
-        // Sincronización en tiempo real entre pestañas/archivos
-        window.addEventListener('storage', () => {
-            // Recargar si estamos viendo algo que fue modificado
-        });
     </script>
 </body>
 </html>
