@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NETVISION ULTIMATE - Streaming Platform</title>
+    <title>NETVISION ULTIMATE - Streaming</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -22,7 +21,7 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between relative">
 
-    <!-- PANTALLA DE SELECCIÓN DE PERFILES -->
+    <!-- Pantalla de Selección de Perfiles -->
     <div id="profile-selection-screen" class="fixed inset-0 z-50 bg-[#07090e] flex flex-col items-center justify-center p-4">
         <div class="max-w-3xl w-full text-center space-y-10">
             <div class="space-y-2">
@@ -41,7 +40,7 @@
         </div>
     </div>
 
-    <!-- HEADER PRINCIPAL -->
+    <!-- Header Principal -->
     <header id="main-header" class="hidden relative z-40 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#07090e]/90 backdrop-blur-md sticky top-0">
         <div class="flex items-center space-x-8">
             <span class="text-2xl font-black tracking-wider text-white cursor-pointer" onclick="changeView('home')">NET<span class="text-[#00e5ff] neon-glow">VISION</span></span>
@@ -67,10 +66,10 @@
         </div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL -->
+    <!-- Contenido Principal -->
     <main class="relative z-10 flex-grow max-w-7xl mx-auto w-full p-4 md:p-6 space-y-10">
         
-        <!-- VISTA HOME -->
+        <!-- Vista Home -->
         <div id="view-home" class="space-y-8 hidden">
             <div id="featured-banner" class="relative rounded-2xl overflow-hidden aspect-[21/9] bg-gray-900 border border-white/10 flex items-end p-6 md:p-10 shadow-2xl"></div>
             <div class="space-y-8">
@@ -89,7 +88,7 @@
             </div>
         </div>
 
-        <!-- VISTA CATÁLOGO -->
+        <!-- Vista Catálogo -->
         <div id="view-catalog" class="hidden space-y-6">
             <div class="flex items-center justify-between border-b border-white/10 pb-4">
                 <h2 id="catalog-title" class="text-2xl font-bold text-white uppercase">Catálogo</h2>
@@ -97,7 +96,7 @@
             <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5"></div>
         </div>
 
-        <!-- VISTA TV EN VIVO -->
+        <!-- Vista TV en Vivo -->
         <div id="view-live" class="hidden space-y-8">
             <h2 class="text-2xl font-bold text-white uppercase border-b border-white/10 pb-4">TV en Vivo por Categorías</h2>
             <div id="live-categories-container" class="space-y-10"></div>
@@ -105,7 +104,7 @@
 
     </main>
 
-    <!-- MODAL DETALLE (Sinopsis, Relacionados, Acciones) -->
+    <!-- Modal Detalle -->
     <div id="detail-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="glass-card max-w-3xl w-full rounded-2xl overflow-hidden relative max-h-[90vh] flex flex-col shadow-2xl">
             <button onclick="closeDetailModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition">
@@ -115,7 +114,7 @@
         </div>
     </div>
 
-    <!-- MODAL REPRODUCTOR INTELIGENTE -->
+    <!-- Modal Reproductor Inteligente -->
     <div id="player-modal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl hidden flex flex-col">
         <div class="flex items-center justify-between p-4 bg-black/80 border-b border-white/10">
             <h3 id="player-title" class="text-lg font-bold text-white truncate max-w-xl">Reproduciendo</h3>
@@ -134,7 +133,7 @@
         </div>
     </div>
 
-    <!-- MODAL CREAR PERFIL -->
+    <!-- Modal Crear Perfil -->
     <div id="profile-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex items-center justify-center p-4">
         <div class="glass-card p-6 rounded-2xl max-w-sm w-full space-y-4">
             <h3 class="text-lg font-bold text-white">Crear Nuevo Perfil</h3>
@@ -146,7 +145,7 @@
         </div>
     </div>
 
-    <!-- MODAL DONACIÓN -->
+    <!-- Modal Donación -->
     <div id="donation-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex items-center justify-center p-4">
         <div class="glass-card p-8 rounded-2xl max-w-md w-full text-center space-y-6">
             <div class="w-16 h-16 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-heart"></i></div>
@@ -328,7 +327,7 @@
                                 <i class="fa-solid fa-play"></i><span>Ver ahora</span>
                             </button>
                             <button onclick="toggleWatchlist('${item.id}')" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition flex items-center space-x-2">
-                                <i class="fa-solid ${isInList ? 'fa-check text-green-400' : 'fa-plus'}"></i><span>${isInList ? 'En mi lista' : 'Mi lista'}</span>
+                                <i class="fa-solid ${isInList ? 'fa-check text-green-400' : 'fa-plus'}"><span>${isInList ? 'En mi lista' : 'Mi lista'}</span>
                             </button>
                         </div>
                     </div>
